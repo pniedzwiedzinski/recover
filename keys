@@ -1,0 +1,38 @@
+#!/bin/sh
+## Script for copying my keychain
+##
+## This script is supposed to sit on a removable drive with these files:
+## - id_rsa - private ssh key
+## - id_rsa.pub - public ssh key
+## - secret.gpg - private gpg key
+## - public.gpg - public gpg key
+##
+## To setup your keys mount the drive, cd into it and run `./keys`
+
+set -euo pipefail
+
+echo "\$USER is $USER; \$HOME is $HOME"
+
+[ "$USER" != "pn" ] && echo "\nWarning: username is not 'pn'!\n"
+
+read -p "continue? [y/N]" choice
+
+case "$choice" in
+  y|Y) echo "Installing..." ;;
+  * ) echo "Mission aborted!"; exit 1 ;;
+esac
+
+echo "Copying ssh key to $HOME/.ssh/id_rsa ..."
+mkdir -p $HOME/.ssh
+cp id_rsa $HOME/.ssh
+cp id_rsa.pub $HOME/.ssh
+chmod 700 $HOME/.ssh/id_rsa
+echo "Ssh key done."
+
+echo "Importing gpg keys..."
+cp public.gpg secret.gpg $HOME
+gpg --import $HOME/public.gpg
+echo "Key $HOME/public.gpg imported"
+gpg --import $HOME/secret.gpg
+echo "Key $HOME/secret.gpg imported"
+echo "Gnupg keys done"

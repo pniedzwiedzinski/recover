@@ -1,0 +1,28 @@
+#!/bin/sh
+## Script for installing my nixos config. NixOS pretty much automates all the
+## process, but still you need to pass config url and rest of the commands, and
+## if it's tideous work after setting up all the disk partitions. So I made
+## this script to make less typing
+##
+## Usage: ./install {$machine}
+## this will install config from dots/machines/$machine
+
+set -eou pipefail
+
+[ "$UID" != "0" ] && echo "Run this as root!" && exit 1
+
+mkdir -p /etc/nixos/dots
+
+which nix && nix run nixos.git -c git clone https://github.com/pniedzwiedzinski/dots /etc/nixos/dots
+
+[ -z "$1" ] || cat << EOF > /etc/nixos/configuration.nix
+{
+  imports = [
+    ./dots/machines/$1
+  ];
+
+  system.stateVersion = "20.09";
+}
+EOF
+
+nixos-rebuild switch
