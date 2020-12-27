@@ -25,4 +25,4 @@ which nix && nix run nixos.git -c git clone https://github.com/pniedzwiedzinski/
 }
 EOF
 
-nixos-rebuild switch
+nixos-install
